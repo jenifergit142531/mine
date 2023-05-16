@@ -1,1 +1,74 @@
 
+Containerize the application and deploy
+
+Â 
+
+
+- Create the container registry in Microsoft azure (portal.azure.com)
+
+Â 
+
+
+- Create application
+- Add docker fileÂ 
+- Docker build -t my image .
+- Docker run -d -p 8081:80 my image
+
+Â 
+
+Â 
+
+Install azure cli
+
+Â 
+
+learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows
+
+Â 
+
+Az login
+
+Â 
+
+
+Docker tag my image:latest <registry-name>/myimage
+
+Â 
+
+Docker push <registryname>/myimage
+
+Â 
+
+
+Fail : authentication required
+
+Â 
+
+Az acr login â€”name <registryusername> â€”expose-token
+
+Â 
+
+
+It will generate token
+
+Â 
+
+Docker login <registry-name> -u 000000000000000000000 -p accesstoken
+
+Â 
+
+
+Once the login is successful
+
+Â 
+
+Docker push <registryname>/myimage
+
+Â 
+
+
+- Go to azure portal and check under repositories
+- Create container instance with azure container registry and deploy it
+- Once deployment is successful goto resources and copy the PUBLIC IP address
+- Paste the IP address on browser
+http://ipaddress/weatherforecast
