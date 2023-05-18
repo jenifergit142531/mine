@@ -1,0 +1,61 @@
+What is Workflow?
+A workflow is a series of activities involved in a task or set of activities collectively forms a work. 
+Except for the first and last step, steps will have a preceding and succeeding step.
+
+What is Activity?
+
+An activity defines a piece of work. 
+The work an activity implements can be very simple or it can be quite complex. 
+Activities are the fundamental building blocks or unit of a workflow.
+An activity represents an action in a workflow. 
+
+Rules and Conditions
+
+Conditions are logic that return true or false. 
+A number of Work Flow activities work based on conditions by affecting their behavior. 
+These activities include the While activity, the IfElseBranch activity, and the ConditionedActivityGroup. 
+
+Rules contains various conditions with a set of actions to perform. 
+Rules use a declarative if-then-else style, where the "if" is a condition to evaluate.
+
+
+Types:
+- sequence
+- flowchart
+- state
+
+Windows Workflow Foundation can be used in following types of scenarios but not limited to this:
+Applications with User-interface page flows.
+Workflows that are document-centric.
+Human workflows.
+Service-oriented applications wtih composite workflows.
+Rule-driven workflows for business.
+Workflows for systems management.
+
+
+
+namespace ConsoleApp15
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            WorkflowInvoker.Invoke(new HelloWorkflow());
+            Console.ReadLine();
+        }
+    }
+
+    public class HelloWorkflow : Activity
+    {
+        public HelloWorkflow()
+        {
+            this.Implementation = () => new Sequence
+            {
+                Activities = {
+                    new WriteLine(){Text="Hello Workflow"}
+                }
+            };
+        }
+    }
+    
+}
