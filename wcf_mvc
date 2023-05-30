@@ -1,0 +1,60 @@
+ref : https://www.c-sharpcorner.com/UploadFile/d13d20/creating-aspnet-mvc-app-with-wcf-service-docx/
+
+- open wcf service
+- right click and ado.net entity data model
+[ServiceContract]
+public interface IService
+{
+
+	[OperationContract]
+	List<gaming> GetGamings();
+
+	// TODO: Add your service operations here
+}
+
+
+public class Service : IService
+{
+	
+    public List<gaming> GetGamings()
+    {
+        DemoEntities2 de = new DemoEntities2();
+        var x = from n in de.gamings select n;
+        return x.ToList<gaming>();
+    }
+}
+
+- run service.svc
+- take the url and execute on the browser
+
+
+- Create a new asp.net mvc application
+- add service references
+- right click controller and add new controller
+
+public class DBController : Controller
+    {
+        // GET: DB
+        public ActionResult Index()
+        {
+            ServiceReference1.ServiceClient serviceClient = new ServiceReference1.ServiceClient();
+            return View(serviceClient.GetGamings());
+        }
+    }
+    
+    - right click and generate view(list template)
+    
+    - execute it
+
+
+
+
+
+
+
+
+
+
+
+
+
