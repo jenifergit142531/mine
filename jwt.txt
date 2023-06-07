@@ -1,0 +1,100 @@
+To secure a minimal API using JWT authentication, we will follow these steps:
+
+Create a minimal API project in Visual Studio 2022.
+Create an API endpoint in the Program.cs file.
+Add the Microsoft.AspNetCore.Authentication.JwtBearer NuGet package to our project.
+Implement JWT authentication in the Program.cs file.
+Create a user model class named User to store the login credentials of the user.
+Specify a secret key in the appsettings.json file.
+Specify JWT authentication settings in the Program.cs file.
+Add authorization services middleware to our application in the Program.cs file.
+Create and validate the JSON Web Token in the Program.cs file.
+
+- class 
+
+public class User
+    {
+        public string UserName { get; set; }
+        public string Password { get; set; }
+    }
+
+- appsettings :
+
+"Jwt": {
+    "Issuer": "https://jeni.com/",
+    "Audience": "https://jeni.com/",
+    "Key": "This is a sample secret key - please don't use in production environment.'"
+  },
+
+- code :
+
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using secureapi;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(o =>
+{
+    o.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey
+            (Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = false,
+        ValidateIssuerSigningKey = true
+    };
+});
+builder.Services.AddAuthorization();
+var app = builder.Build();
+app.UseHttpsRedirection();
+app.MapGet("/security/getMessage", () => "Hello World!").RequireAuthorization();
+app.MapPost("/security/createToken",
+[AllowAnonymous] (User user) =>
+{
+    if (user.UserName == "jeni" && user.Password == "jeni123")
+    {
+        var issuer = builder.Configuration["Jwt:Issuer"];
+        var audience = builder.Configuration["Jwt:Audience"];
+        var key = Encoding.ASCII.GetBytes
+        (builder.Configuration["Jwt:Key"]);
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new[]
+            {
+                new Claim("Id", Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Email, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti,
+                Guid.NewGuid().ToString())
+             }),
+            Expires = DateTime.UtcNow.AddMinutes(5),
+            Issuer = issuer,
+            Audience = audience,
+            SigningCredentials = new SigningCredentials
+            (new SymmetricSecurityKey(key),
+            SecurityAlgorithms.HmacSha512Signature)
+        };
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        var jwtToken = tokenHandler.WriteToken(token);
+        var stringToken = tokenHandler.WriteToken(token);
+        return Results.Ok(stringToken);
+    }
+    return Results.Unauthorized();
+});
+app.UseAuthentication();
+app.UseAuthorization();
+app.Run();
