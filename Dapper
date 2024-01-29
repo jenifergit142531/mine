@@ -1,0 +1,32 @@
+
+create database dp
+
+use dp
+
+drop table companies
+
+CREATE TABLE [dbo].[Companies](
+	[Id] [int] IDENTITY(1,1) NOT NULL primary key,
+	[Name] [nvarchar](50) NOT NULL,
+	[Address] [nvarchar](60) NOT NULL,
+	[Country] [nvarchar](50) NOT NULL,)
+
+	CREATE TABLE [dbo].[Employees](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](50) NOT NULL,
+	[Age] [int] NOT NULL,
+	[Position] [nvarchar](50) NOT NULL,
+	[CompanyId] [int] NOT NULL foreign key references companies(id))
+
+SET IDENTITY_INSERT [dbo].[Companies] ON 
+INSERT [dbo].[Companies] ([Id], [Name], [Address], [Country]) VALUES (1, N'IT_Solutions Ltd', N'583 Wall Dr. Gwynn Oak, MD 21207', N'USA')
+INSERT [dbo].[Companies] ([Id], [Name], [Address], [Country]) VALUES (2, N'Admin_Solutions Ltd', N'312 Forest Avenue, BF 923', N'USA')
+
+SET IDENTITY_INSERT [dbo].[Companies] OFF
+SET IDENTITY_INSERT [dbo].[Employees] ON 
+
+INSERT [dbo].[Employees] ([Id], [Name], [Age], [Position], [CompanyId]) VALUES (1, N'Sam Raiden', 26, N'Software developer', 1)
+INSERT [dbo].[Employees] ([Id], [Name], [Age], [Position], [CompanyId]) VALUES (2, N'Kane Miller', 35, N'Administrator', 2)
+INSERT [dbo].[Employees] ([Id], [Name], [Age], [Position], [CompanyId]) VALUES (3, N'Jana McLeaf', 30, N'Software developer', 1)
+
+SET IDENTITY_INSERT [dbo].[Employees] OFF
